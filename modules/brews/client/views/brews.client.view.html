@@ -1,0 +1,150 @@
+<section ng-controller='BrewController'>
+
+  <div class="span3 well user-face">
+    <center>
+      <a href="#aboutModal" data-toggle="modal" data-target="#myModal"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/cbillins/128.jpg" name="aboutme" width="140" height="140" class="img-circle"></a>
+      <h3>{{authentication.user.email}}</h3>
+    </center>
+  </div>
+
+  <div class='col-md-4 col-sm-12 clear-bottom' ng-repeat="stat in tile_stats">
+    <a class="col-md-offset-2 col-md-8 col-sm-12 btn btn-lg btn-success text-center" href="#">
+      <i ng-class="stat.icon"></i>
+      <span>{{stat.title}}<br>
+        <small>{{stat.value}}</small>
+      </span>
+    </a>
+  </div>
+
+  <div class="brew-grid content-wrapper">
+    <div class="row">
+      <div class="col-sm-6 col-md-4" ng-repeat="brew in brews">
+        <div class="info-card">
+          <img style="width: 100%" src="modules/brews/client/img/brew.jpg"/>
+          <div class="info-card-details animate">
+            <div class="info-card-header">
+              <div class='col-md-12'>
+                <button type="button" ng-click="addFavorite()" class="btn btn-danger btn-fav pull-right">
+                  <i class="glyphicon glyphicon-heart"></i>
+                </button>
+              </div>
+              <h1>
+                {{brew.roaster}}
+              </h1>
+              <h3>
+                {{brew.beans}}
+                <p>
+                  {{brew.method}}
+                </p>
+              </h3>
+            </div>
+            <div class="info-card-detail">
+              <div class="col-xs-12 col-md-12">
+                <div class="row rating-desc">
+                  <div class="col-xs-3 col-md-3 text-right">
+                    <p>taste</p>
+                  </div>
+                  <div class="col-xs-8 col-md-9">
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: {{brew.taste}}%"></div>
+                    </div>
+                  </div>
+                  <div class="col-xs-3 col-md-3 text-right">
+                    <p>mood</p>
+                  </div>
+                  <div class="col-xs-8 col-md-9">
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: {{brew.mood}}%"></div>
+                    </div>
+                  </div>
+                  <div class="col-xs-3 col-md-3 text-right">
+                    <p>grind</p>
+                  </div>
+                  <div class="col-xs-8 col-md-9">
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: {{brew.grind}}%"></div>
+                    </div>
+                  </div>
+                  <div class="col-xs-3 col-md-3 text-right">
+                    <p>grams</p>
+                  </div>
+                  <div class="col-xs-8 col-md-9">
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: {{brew.grams}}%"></div>
+                    </div>
+                  </div>
+                  <div class="col-xs-3 col-md-3 text-right">
+                    <p>temp (f)</p>
+                  </div>
+                  <div class="col-xs-8 col-md-9">
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: {{brew.temperature}}%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class='btn btn-success btn-circle' ng-click='toggleModal()'>
+      <i class='fa fa-coffee'></i>
+    </button>
+
+    <modal title='Log Your Brew' visible='showModal'>
+      <form role='form'>
+        <div class='form-group'>
+          <label for='roaster'>Roaster</label>
+          <input ng-model='form.roaster' type='roaster' class='form-control' id='roaster' placeholder='Enter Roaster'/>
+        </div>
+        <div class='form-group'>
+          <label for='beans'>Beans</label>
+          <input ng-model='form.beans' type='beans' class='form-control' id='beans' placeholder='Enter Beans'/>
+        </div>
+
+        <div class='form-group'>
+          <label for='method'>Brew Method</label>
+          <input ng-model='form.method' type='method' class='form-control' id='method' placeholder='Enter Method'/>
+        </div>
+        <div class='col-md-12 buffer-bottom'>
+          <div class='col-md-4'>
+            <label for='grind'>Grind</label>
+            <input ng-model='form.grind' type='grind' class='form-control' id='grind' placeholder="Grind Size"/>
+          </div>
+          <div class='col-md-4'>
+            <label for='water'>Grams</label>
+            <input ng-model='form.grams' type='water' class='form-control' id='grams' placeholder="Grams of Water"/>
+          </div>
+          <div class='col-md-4'>
+            <label for='temperature'>Temperature</label>
+            <input ng-model='form.temperature' type='temperature' class='form-control' id='temperature' placeholder="Temperature"/>
+          </div>
+        </div>
+
+        <div class='col-md-12 buffer-bottom'>
+          <div class='col-md-6'>
+            <label for='taste'>Taste</label>
+            <div class="col-md-12">
+              <rating ng-model='brew.taste' value="taste" max="tasteMax" on-hover="hoveringTaste(value)" on-leave="leavingTaste()"></rating>
+              <span class="label" ng-class="{'label-warning': percent<30, 'label-info': percent>=30 && percent<70, 'label-success': percent>=70}" ng-show="overTaste">{{percent}}%</span>
+            </div>
+          </div>
+          <div class='col-md-6'>
+            <label for='mood'>Your Mood</label>
+            <div class="col-md-12">
+              <rating ng-model='brew.mood' value="mood" max="moodMax" on-hover="hoveringMood(value)" on-leave="leavingMood()"></rating>
+              <span class="label" ng-class="{'label-warning': percent<30, 'label-info': percent>=30 && percent<70, 'label-success': percent>=70}" ng-show="overMood>0">{{percent}}%</span>
+            </div>
+          </div>
+        </div>
+      <div class="col-md-12 little-buffer" <span id="fileselector"> <label class="btn btn-default btn-block" for="upload-file-selector"> <input id="upload-file-selector" type="file"> <i class="fa_icon icon-upload-alt"></i>upload file
+    </label>
+  </span>
+</div>
+<button ng-click='addBrew(form)' type='submit' class='btn btn-success col-md-offset-5'>Submit</button>
+</form>
+</modal>
+
+</section>

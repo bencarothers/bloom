@@ -1,0 +1,85 @@
+#upload-file-selector {
+    display:none;
+}
+.margin-correction {
+    margin-right: 10px;
+}
+.user-face {
+  margin-top: 60px;
+  background: rgb(255, 217, 89);
+}
+.btn-circle {
+  width: 70px;
+  height: 70px;
+  font-size: 24px;
+  line-height: 1.33;
+  border-radius: 20px;
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  z-index: 100;
+  text-decoration: none;
+}
+.btn-fav{
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 7px;
+}
+.coffee-tab {
+  margin-top: 15px;
+  height: 150px;
+}
+.thumbnail {
+  height: 250px;
+  width: 350px;
+}
+.clear-bottom{
+  margin-bottom: 50px;
+}
+.buffer-bottom{
+  margin-bottom: 25px;
+}
+.little-buffer{
+  margin-bottom: 10px
+}
+.buffer {
+  margin-left: 25px;
+  margin-right: 25px;
+}
+a.list-group-item {
+  height: auto;
+  min-height: 220px;
+}
+a.list-group-item.active small {
+  color: #fff;
+}
+.stars {
+  margin: 20px auto 1px;
+}
+.star-rating {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+
+  .star {
+    padding: 1px;
+    color: #ddd;
+    font-size: 20px;
+    text-shadow: .05em .05em #aaa;
+    list-style-type: none;
+    display: inline-block;
+    cursor: pointer;
+
+    &.filled {
+      color: #fd0;
+    }
+  }
+
+  &.readonly .star.filled {
+    color: #666;
+  }
+}
