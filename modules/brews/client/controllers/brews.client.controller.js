@@ -1,91 +1,125 @@
-'use strict';
+(function() {
+  'use strict';
 
-angular.module('brews').controller('BrewController', ['$scope', 'Authentication', '$state',
-  function($scope, Authentication, $state) {
+  // Brews controller
+  angular
+    .module('brews')
+    .controller('BrewsController', BrewsController);
 
-    // This provides Authentication context.
-    $scope.authentication = Authentication;
+  BrewsController.$inject = ['$scope', '$state', 'Authentication', 'brewResolve'];
 
-    $scope.showModal = false;
+  function BrewsController($scope, $state, Authentication, brew) {
+    var vm = this;
 
-    $scope.toggleModal = function() {
-      $scope.showModal = !$scope.showModal;
+    vm.authentication = Authentication;
+    vm.brew = brew;
+    vm.brews = [];
+    vm.error = null;
+    vm.form = {};
+    vm.remove = remove;
+    vm.toggleFavorite = toggleFavorite;
+    vm.save = save;
+    vm.showModal = false;
+
+    vm.toggleModal = function() {
+      vm.showModal = !vm.showModal;
     };
 
-    $scope.addBrew = function(form){
-      console.log(form)
-      var newBrew = {
-          thumb: 'https://pbs.twimg.com/profile_images/378800000191332506/a02c990aad4d282e7408752175ed04f9.jpeg',
-          roaster: form.roaster,
-          beans: form.beans,
-          grind: form.grind,
-          method: form.method,
-          taste: form.score,
-          mood: form.mood
+    vm.countFavorites = function(brews) {
+      var favorites = 0
+      for (var brew = 0; brew < brews.length; brew++) {
+        if (brews[brew]['favorite'] === 1) {
+          favorites++
+        }
       }
-
-      form.roaster = ''
-      form.beans= ''
-      form.grind= ''
-      form.method = ''
-      form.score = ''
-      form.mood= ''
-
-      $scope.brews.push(newBrew)
+      return favorites
     }
 
-    $scope.brews = [{
-      thumb: 'https://pbs.twimg.com/profile_images/378800000191332506/a02c990aad4d282e7408752175ed04f9.jpeg',
-      roaster: 'Kuma',
-      beans: 'Carmen Estate',
-      method: 'Chemex',
-      favorite: = false,
-      grind: 21,
-      temperature: 21,
-      taste: 75,
-      grams: 75,
-      mood: 10
-    }]
-    $scope.tile_stats = [{
-      title: 'Your Brews:',
-      icon: 'fa fa-coffee',
-      value: $scope.brews.length
-    }, {
-      title: 'Your Favorites:',
-      icon: 'fa fa-diamond',
-      value: 0
-    }, {
-      title: 'Coffee Streak:',
-      icon: 'fa fa-cogs',
-      value: 0
-    }]
+    vm.brew.$list(function(userData) {
+      vm.brews = userData['brews']
+      vm.tile_stats = [{
+        title: 'Your Brews:',
+        icon: 'fa fa-coffee',
+        value: vm.brews.length
+      }, {
+        title: 'Your Favorites:',
+        icon: 'fa fa-diamond',
+        value: vm.countFavorites(vm.brews)
+      }, {
+        title: 'Coffee Streak:',
+        icon: 'fa fa-cogs',
+        value: 0
+      }]
+    });
 
-    $scope.getNumber = function(num) {
+    vm.getNumber = function(num) {
       return new Array(num);
     }
 
-    $scope.mood= 0;
-    $scope.moodMax = 10;
-
-    $scope.taste = 0;
-    $scope.tasteMax = 10;
-
-    $scope.hoveringTaste = function(value) {
-      $scope.overTaste = value;
-      $scope.percent = 100 * (value / $scope.tasteMax);
+    vm.mood = 0;
+    vm.moodMax = 10;
+    vm.taste = 0;
+    vm.tasteMax = 10;
+    vm.hoveringTaste = function(value) {
+      vm.overTaste = value;
+      vm.percent = 100 * (value / vm.tasteMax);
+    };
+    vm.leavingTaste = function() {
+      vm.overTaste = 0;
+    }
+    vm.hoveringMood = function(value) {
+      vm.overMood = value;
+      vm.percent = 100 * (value / vm.moodMax);
     };
 
-    $scope.leavingTaste = function() {
-      $scope.overTaste = 0;
+    vm.leavingMood = function() {
+      vm.overMood = 0;
     }
 
-    $scope.hoveringMood = function(value) {
-      $scope.overMood = value;
-      $scope.percent = 100 * (value / $scope.moodMax);
-    };
+    // Remove existing Brew
+    function remove(brew) {
+      vm.brew._id = brew._id
+      if (confirm('Are you sure you want to delete?')) {
+        vm.brew.$delete();
+      }
+      $state.go($state.current, {}, {
+        reload: true
+      })
+    }
 
-    $scope.leavingMood = function() {
-      $scope.overMood = 0;
+    function toggleFavorite(brew) {
+      vm.brew._id = brew._id
+      vm.brew.favorite = brew.favorite === 0 ? 1 : 0;
+      vm.brew.$update()
+      $state.go($state.current, {}, {
+        reload: true
+      })
+    }
+
+    // Save Brew
+    function save(isValid) {
+      if (!isValid) {
+        $scope.$broadcast('show-errors-check-validity', 'vm.form.brewForm');
+        return false;
+      }
+
+      if (vm.brew._id) {
+        vm.brew.$update(successCallback, errorCallback);
+        vm.toggleModal()
+      } else {
+        vm.brew.$save(successCallback, errorCallback);
+        vm.toggleModal()
+      }
+
+      function successCallback(res) {
+        $state.go($state.current, {}, {
+          reload: true
+        })
+      }
+
+      function errorCallback(res) {
+        vm.error = res.data.message;
+      }
     }
   }
-]);
+})();

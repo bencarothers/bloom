@@ -1,4 +1,4 @@
-#upload-file-selector {
+.upload-file-selector {
     display:none;
 }
 .margin-correction {
@@ -40,6 +40,9 @@
 .clear-bottom{
   margin-bottom: 50px;
 }
+.clear-right{
+  margin-right: 10px;
+}
 .buffer-bottom{
   margin-bottom: 25px;
 }
@@ -59,27 +62,4 @@ a.list-group-item.active small {
 }
 .stars {
   margin: 20px auto 1px;
-}
-.star-rating {
-  margin: 0;
-  padding: 0;
-  display: inline-block;
-
-  .star {
-    padding: 1px;
-    color: #ddd;
-    font-size: 20px;
-    text-shadow: .05em .05em #aaa;
-    list-style-type: none;
-    display: inline-block;
-    cursor: pointer;
-
-    &.filled {
-      color: #fd0;
-    }
-  }
-
-  &.readonly .star.filled {
-    color: #666;
-  }
 }

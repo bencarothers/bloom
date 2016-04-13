@@ -1,13 +1,12 @@
-<section ng-controller='BrewController'>
-
+<section>
   <div class="span3 well user-face">
     <center>
       <a href="#aboutModal" data-toggle="modal" data-target="#myModal"><img src="https://s3.amazonaws.com/uifaces/faces/twitter/cbillins/128.jpg" name="aboutme" width="140" height="140" class="img-circle"></a>
-      <h3>{{authentication.user.email}}</h3>
+      <h3>{{vm.authentication.user.email}}</h3>
     </center>
   </div>
 
-  <div class='col-md-4 col-sm-12 clear-bottom' ng-repeat="stat in tile_stats">
+  <div class='col-md-4 col-sm-12 clear-bottom' ng-repeat="stat in vm.tile_stats">
     <a class="col-md-offset-2 col-md-8 col-sm-12 btn btn-lg btn-success text-center" href="#">
       <i ng-class="stat.icon"></i>
       <span>{{stat.title}}<br>
@@ -18,15 +17,21 @@
 
   <div class="brew-grid content-wrapper">
     <div class="row">
-      <div class="col-sm-6 col-md-4" ng-repeat="brew in brews">
+      <div class="col-sm-6 col-md-4" ng-repeat="brew in vm.brews">
         <div class="info-card">
           <img style="width: 100%" src="modules/brews/client/img/brew.jpg"/>
           <div class="info-card-details animate">
             <div class="info-card-header">
               <div class='col-md-12'>
-                <button type="button" ng-click="addFavorite()" class="btn btn-danger btn-fav pull-right">
+
+                <button type="button" ng-click="vm.remove(brew)" class="btn btn-danger btn-fav pull-right">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </button>
+
+                <button type="button" ng-click="vm.toggleFavorite(brew)" ng-class="brew.favorite===0 ? 'btn btn-secondary btn-fav clear-right pull-right' : 'btn btn-success btn-fav clear-right pull-right'">
                   <i class="glyphicon glyphicon-heart"></i>
                 </button>
+
               </div>
               <h1>
                 {{brew.roaster}}
@@ -89,37 +94,37 @@
       </div>
     </div>
 
-    <button class='btn btn-success btn-circle' ng-click='toggleModal()'>
+    <button class='btn btn-success btn-circle' ng-click='vm.toggleModal()'>
       <i class='fa fa-coffee'></i>
     </button>
 
-    <modal title='Log Your Brew' visible='showModal'>
-      <form role='form'>
+    <modal title='Log Your Brew' visible='vm.showModal'>
+      <form name="vm.form.brewForm" class="form-horizontal" ng-submit="vm.save(vm.form.brewForm.$valid)" novalidate>
         <div class='form-group'>
           <label for='roaster'>Roaster</label>
-          <input ng-model='form.roaster' type='roaster' class='form-control' id='roaster' placeholder='Enter Roaster'/>
+          <input ng-model='vm.brew.roaster' type='roaster' class='form-control' id='roaster' placeholder='Enter Roaster'/>
         </div>
         <div class='form-group'>
           <label for='beans'>Beans</label>
-          <input ng-model='form.beans' type='beans' class='form-control' id='beans' placeholder='Enter Beans'/>
+          <input ng-model='vm.brew.beans' type='beans' class='form-control' id='beans' placeholder='Enter Beans'/>
         </div>
 
         <div class='form-group'>
           <label for='method'>Brew Method</label>
-          <input ng-model='form.method' type='method' class='form-control' id='method' placeholder='Enter Method'/>
+          <input ng-model='vm.brew.method' type='method' class='form-control' id='method' placeholder='Enter Method'/>
         </div>
         <div class='col-md-12 buffer-bottom'>
           <div class='col-md-4'>
             <label for='grind'>Grind</label>
-            <input ng-model='form.grind' type='grind' class='form-control' id='grind' placeholder="Grind Size"/>
+            <input ng-model='vm.brew.grind' type='grind' class='form-control' id='grind' placeholder="Grind Size"/>
           </div>
           <div class='col-md-4'>
             <label for='water'>Grams</label>
-            <input ng-model='form.grams' type='water' class='form-control' id='grams' placeholder="Grams of Water"/>
+            <input ng-model='vm.brew.grams' type='water' class='form-control' id='grams' placeholder="Grams of Water"/>
           </div>
           <div class='col-md-4'>
             <label for='temperature'>Temperature</label>
-            <input ng-model='form.temperature' type='temperature' class='form-control' id='temperature' placeholder="Temperature"/>
+            <input ng-model='vm.brew.temperature' type='temperature' class='form-control' id='temperature' placeholder="Temperature"/>
           </div>
         </div>
 
@@ -127,23 +132,23 @@
           <div class='col-md-6'>
             <label for='taste'>Taste</label>
             <div class="col-md-12">
-              <rating ng-model='brew.taste' value="taste" max="tasteMax" on-hover="hoveringTaste(value)" on-leave="leavingTaste()"></rating>
-              <span class="label" ng-class="{'label-warning': percent<30, 'label-info': percent>=30 && percent<70, 'label-success': percent>=70}" ng-show="overTaste">{{percent}}%</span>
+              <rating ng-model='vm.brew.taste' value="vm.taste" max="vm.tasteMax" on-hover="vm.hoveringTaste(value)" on-leave="vm.leavingTaste()"></rating>
+              <span class="label" ng-class="{'label-warning': percent<30, 'label-info': percent>=30 && percent<70, 'label-success': percent>=70}" ng-show="vm.overTaste">{{percent}}%</span>
             </div>
           </div>
           <div class='col-md-6'>
             <label for='mood'>Your Mood</label>
             <div class="col-md-12">
-              <rating ng-model='brew.mood' value="mood" max="moodMax" on-hover="hoveringMood(value)" on-leave="leavingMood()"></rating>
-              <span class="label" ng-class="{'label-warning': percent<30, 'label-info': percent>=30 && percent<70, 'label-success': percent>=70}" ng-show="overMood>0">{{percent}}%</span>
+              <rating ng-model='vm.brew.mood' value="vm.mood" max="vm.moodMax" on-hover="vm.hoveringMood(value)" on-leave="vm.leavingMood()"></rating>
+              <span class="label" ng-class="{'label-warning': percent<30, 'label-info': percent>=30 && percent<70, 'label-success': percent>=70}" ng-show="vm.overMood>0">{{percent}}%</span>
             </div>
           </div>
         </div>
-      <div class="col-md-12 little-buffer" <span id="fileselector"> <label class="btn btn-default btn-block" for="upload-file-selector"> <input id="upload-file-selector" type="file"> <i class="fa_icon icon-upload-alt"></i>upload file
+      <div class="col-md-12 little-buffer" <span id="fileselector"> <label class="btn btn-default btn-block" for="upload-file-selector"> <input class="upload-file-selector" type="file"> <i class="fa_icon icon-upload-alt"></i>upload file
     </label>
   </span>
 </div>
-<button ng-click='addBrew(form)' type='submit' class='btn btn-success col-md-offset-5'>Submit</button>
+<button type='submit' class='btn btn-success col-md-offset-5'>Submit</button>
 </form>
 </modal>
 

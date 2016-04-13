@@ -1,21 +1,44 @@
-'use strict';
+(function () {
+  'use strict';
 
-// Setting up route
-angular.module('core').config(['$stateProvider', '$urlRouterProvider',
-  function ($stateProvider, $urlRouterProvider) {
+  angular
+    .module('brews')
+    .config(routeConfig);
 
-    // Redirect to 404 when route not found
-    $urlRouterProvider.otherwise(function ($injector, $location) {
-      $injector.get('$state').transitionTo('not-found', null, {
-        location: false
-      });
-    });
+  routeConfig.$inject = ['$stateProvider'];
 
-    // Brew Dashboard
+  function routeConfig($stateProvider) {
     $stateProvider
-    .state('brews', {
-      url: '/brews',
-      templateUrl: 'modules/brews/client/views/brews.client.view.html'
-    })
+      .state('brews', {
+        abstract: true,
+        url: '/brews',
+        template: '<ui-view/>'
+      })
+      .state('brews.list', {
+        url: '',
+        templateUrl: 'modules/brews/client/views/brews.client.view.html',
+        controller: 'BrewsController',
+        controllerAs: 'vm',
+        resolve: {
+          brewResolve: newBrew
+        },
+        data: {
+          pageTitle: 'Brews List'
+        }
+      });
   }
-]);
+
+  getBrew.$inject = ['$stateParams', 'BrewsService'];
+
+  function getBrew($stateParams, BrewsService) {
+    return BrewsService.get({
+      brewId: $stateParams.brewId
+    }).$promise;
+  }
+
+  newBrew.$inject = ['BrewsService'];
+
+  function newBrew(BrewsService) {
+    return new BrewsService();
+  }
+})();
